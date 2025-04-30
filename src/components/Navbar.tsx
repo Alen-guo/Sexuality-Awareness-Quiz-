@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold text-purple-600">性别测试</span>
+            <span className="text-2xl font-bold text-purple-600">性取向测试</span>
           </Link>
           
           <div className="hidden md:flex space-x-8 items-center">

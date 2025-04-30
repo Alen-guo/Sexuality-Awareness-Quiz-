@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">关于我们</h3>
             <p className="text-gray-600">
-              我们致力于提供专业的性别认同测试服务，帮助人们更好地了解自己。
+                我们致力于提供专业的性取向测试服务，帮助人们更好地了解自己。
             </p>
           </div>
           <div>
@@ -32,7 +32,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-200 text-center text-gray-600">
-          <p>© 2025 性别测试. All rights reserved.</p>
+          <p>© 2025 性取向测试. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -6,10 +6,10 @@ const Home: React.FC = () => {
     <div className="container mx-auto px-4 py-16">
       <div className="text-center">
         <h1 className="text-5xl font-bold text-purple-600 mb-8">
-          免费探索你的性别认同
+          免费探索你的性取向
         </h1>
         <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-          通过我们的专业测试，帮助你更好地了解自己的性别认同和表达方式。
+          通过我们的专业测试，帮助你更好地了解自己的性取向和表达方式。
           只需3分钟，获得深入的个人分析报告。
         </p>
         <Link
@@ -24,7 +24,7 @@ const Home: React.FC = () => {
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h3 className="text-xl font-semibold mb-4">专业分析</h3>
           <p className="text-gray-600">
-            基于心理学研究和性别研究理论，提供专业的分析报告。
+            基于心理学研究和性取向研究理论，提供专业的分析报告。
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-lg">
