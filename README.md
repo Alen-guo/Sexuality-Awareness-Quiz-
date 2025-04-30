@@ -32,6 +32,11 @@ npm install
 
 # 启动开发服务器
 npm start
+
+### 部署
+cp -r build/* ./    # 将 build 内容复制到根目录
+git add . && git commit -m "Move build files to root"
+git push origin master
 ```
 
 ## 项目结构
