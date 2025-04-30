@@ -290,7 +290,7 @@ const Results: React.FC = () => {
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-2xl mx-auto">
         <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 mb-6 rounded">
-          本测试结果仅供参考，性取向是流动且多元的自我认同，无法被简单定义。如需专业支持，请联系心理咨询师或LGBTQ+公益组织。
+          本测试结果仅供参考，性取向是流动且多元的自我认同，无法被简单定义。如需专业支持，请联系心理咨询师或LGBTQ+公益组织。(如有冒犯，请别当真，图一乐，哈哈哈笑过，祝您生活愉快)
         </div>
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <h1 className="text-3xl font-bold text-purple-600 mb-6">
