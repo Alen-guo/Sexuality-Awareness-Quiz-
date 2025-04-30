@@ -14,9 +14,9 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">联系方式</h3>
             <p className="text-gray-600">
-              邮箱：support@gendertest.com
+              邮箱：446675781@qq.com
               <br />
-              电话：400-123-4567
+              {/* 电话：400-123-4567 */}
             </p>
           </div>
           <div>
@@ -32,7 +32,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-200 text-center text-gray-600">
-          <p>© 2024 性别测试. All rights reserved.</p>
+          <p>© 2025 性别测试. All rights reserved.</p>
         </div>
       </div>
     </footer>

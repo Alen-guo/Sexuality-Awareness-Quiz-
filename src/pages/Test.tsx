@@ -47,11 +47,11 @@ const questions: Question[] = [
 ];
 
 const gradientOptions = [
-  { value: 4, label: '非常同意', size: 'w-12 h-12' },
-  { value: 3, label: '比较同意', size: 'w-10 h-10' },
-  { value: 2, label: '不确定', size: 'w-8 h-8' },
-  { value: 1, label: '比较不同意', size: 'w-10 h-10' },
-  { value: 0, label: '非常不同意', size: 'w-12 h-12' },
+  { value: 4, label: '非常同意', size: 'w-10 h-10' },
+  { value: 3, label: '比较同意', size: 'w-8 h-8' },
+  { value: 2, label: '不确定', size: 'w-6 h-6' },
+  { value: 1, label: '比较不同意', size: 'w-8 h-8' },
+  { value: 0, label: '非常不同意', size: 'w-10 h-10' },
 ];
 
 const Test: React.FC = () => {
@@ -93,7 +93,7 @@ const Test: React.FC = () => {
         relationship: answers.slice(10, 20).reduce((sum, val) => sum + val, 0) / 40, // 关系构建模式
         identity: answers.slice(20, 30).reduce((sum, val) => sum + val, 0) / 40, // 社会身份认知
       };
-      
+      window.scrollTo({ top: 0, behavior: 'auto' }); // 跳转前滚动到顶部
       navigate('/results', { 
         state: { 
           scores: dimensionScores,
@@ -139,11 +139,12 @@ const Test: React.FC = () => {
         <div className="space-y-12">
           {currentQuestions.map((question, index) => {
             const questionIndex = startIndex + index;
+            const answered = answers[questionIndex] !== -1;
             return (
               <div 
                 key={questionIndex} 
                 ref={el => questionRefs.current[index] = el}
-                className="bg-white p-6 rounded-lg shadow-md"
+                className={`p-6 rounded-lg shadow-md transition-colors duration-200 ${answered ? 'bg-gray-100 text-gray-400' : 'bg-white'}`}
               >
                 <h2 className="text-lg font-medium mb-2 text-gray-800">
                   {question.text}
@@ -152,33 +153,43 @@ const Test: React.FC = () => {
                   {question.note}
                 </p>
                 
-                <div className="flex justify-between items-center">
-                  <span className="text-green-600 font-medium">同意</span>
-                  <div className="flex-1 mx-4 flex justify-between items-center">
-                    {gradientOptions.map((option, optionIndex) => (
-                      <button
-                        key={optionIndex}
-                        onClick={() => handleAnswer(questionIndex, option.value)}
-                        className={`${option.size} rounded-full flex items-center justify-center transition-all
-                          ${answers[questionIndex] === option.value
-                            ? optionIndex <= 2 
-                              ? 'bg-green-600 text-white transform scale-110'
-                              : 'bg-purple-500 text-white transform scale-110'
-                            : optionIndex <= 2
-                              ? 'border-2 border-green-600 hover:border-green-400'
-                              : 'border-2 border-purple-200 hover:border-purple-400'
-                          }`}
-                        title={option.label}
-                      >
-                        {answers[questionIndex] === option.value && (
-                          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </button>
-                    ))}
+                <div className="flex flex-col items-center w-full">
+                  <div className="flex w-full justify-center items-center gap-8">
+                    {gradientOptions.map((option, optionIndex) => {
+                      const isSelected = answers[questionIndex] === option.value;
+                      const faded = answered && !isSelected;
+                      return (
+                        <button
+                          key={optionIndex}
+                          onClick={() => handleAnswer(questionIndex, option.value)}
+                          className={
+                            `${option.size} rounded-full flex items-center justify-center transition-all
+                            ${isSelected
+                              ? optionIndex <= 2 
+                                ? 'bg-green-600 text-white transform scale-110'
+                                : 'bg-purple-500 text-white transform scale-110'
+                              : optionIndex <= 2
+                                ? faded ? 'border-2 border-green-200 text-green-200' : 'border-2 border-green-500 text-green-500 hover:border-green-600'
+                                : faded ? 'border-2 border-purple-200 text-purple-200' : 'border-2 border-purple-500 text-purple-500 hover:border-purple-600'
+                            }
+                          `
+                          }
+                          title={option.label}
+                          style={{ minWidth: 0, minHeight: 0 }}
+                        >
+                          {isSelected && (
+                            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
-                  <span className="text-purple-600 font-medium">不认同</span>
+                  <div className="flex w-full justify-between mt-2 px-2">
+                    <span className={`font-medium transition-colors ${answered ? 'text-green-300' : 'text-green-600'}`}>同意</span>
+                    <span className={`font-medium transition-colors ${answered ? 'text-purple-300' : 'text-purple-600'}`}>不认同</span>
+                  </div>
                 </div>
               </div>
             );
