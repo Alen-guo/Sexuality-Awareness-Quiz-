@@ -20,6 +20,11 @@ const Home: React.FC = () => {
         </Link>
       </div>
 
+      {/* 性取向认知测试介绍 */}
+      <div className="mt-12 max-w-3xl mx-auto bg-purple-50 border-l-4 border-purple-400 p-6 rounded text-gray-700 text-base leading-relaxed">
+        SQS性取向认知测试是一款基于心理学与社会学理论开发的自助评估工具，旨在帮助用户科学、理性地探索自身的情感吸引、关系模式与身份认同。测试内容涵盖多元性取向类型，结合国际主流研究成果，采用结构化问卷与智能算法分析，为每位用户提供个性化的结果解读与生活建议。我们尊重每一种性取向，倡导包容与理解，强调性取向的流动性和多样性。测试结果仅供自我认知参考，不作医学或法律诊断。如有困惑或需要支持，建议寻求专业心理咨询或LGBTQ+公益机构帮助。让我们一起用科学和温暖，认识真实的自己，拥抱多元的世界。
+      </div>
+
       <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h3 className="text-xl font-semibold mb-4">专业分析</h3>
