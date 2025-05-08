@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import RadarChart from '../components/RadarChart';
 
 interface OrientationType {
   label: string;
@@ -45,10 +46,26 @@ const orientationColorCards = [
 const Results: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as { scores: { attraction: number, relationship: number, identity: number }, answers: number[] };
-  // 用情感吸引光谱得分（0-1）映射到0-100
-  const attractionScore = Math.round((state?.scores?.attraction ?? 0) * 100);
-  const orientationType = getOrientationType(attractionScore);
+  const state = location.state as { scores: { attraction: number, relationship: number, identity: number }, answers: number[], radarData?: { name: string, value: number }[], primaryType?: string };
+  // 优先用primaryType（radarData最高项）作为主类型
+  let orientationType: OrientationType;
+  if (state.primaryType) {
+    // 在orientationColorCards中查找label包含primaryType的项
+    const card = orientationColorCards.find(card => card.label.includes(state.primaryType!));
+    if (card) {
+      orientationType = {
+        label: card.label,
+        color: card.color,
+        icon: card.icon,
+        shortDesc: getOrientationType(card.min).shortDesc
+      };
+    } else {
+      // fallback
+      orientationType = getOrientationType(Math.round((state?.scores?.attraction ?? 0) * 100));
+    }
+  } else {
+    orientationType = getOrientationType(Math.round((state?.scores?.attraction ?? 0) * 100));
+  }
 
   // 生存概率仪表盘相关状态
   const [locationInfo, setLocationInfo] = useState<{city: string, region: string} | null>(null);
@@ -284,7 +301,7 @@ const Results: React.FC = () => {
     };
   };
 
-  const result = getResultData(attractionScore);
+  const result = getResultData(Math.round((state?.scores?.attraction ?? 0) * 100));
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -299,11 +316,20 @@ const Results: React.FC = () => {
 
           {/* 醒目的性取向类型标签 */}
           <div className="flex flex-col items-center mb-8">
-            <div className={`flex items-center justify-center text-white text-2xl font-bold px-8 py-4 rounded-full shadow-lg mb-2 ${orientationType.color}`}>
-              <span className="mr-3 text-3xl">{orientationType.icon}</span>
-              {orientationType.label}
+            <div className={`flex items-center justify-center text-white text-2xl font-bold px-8 py-4 rounded-full shadow-lg mb-2 ${result.orientationType.color}`}>
+              <span className="mr-3 text-3xl">{result.orientationType.icon}</span>
+              {result.orientationType.label}
             </div>
-            <div className="text-gray-700 text-lg mt-2 font-semibold">{orientationType.shortDesc}</div>
+            <div className="text-gray-700 text-lg mt-2 font-semibold">{result.orientationType.shortDesc}</div>
+          </div>
+
+          {/* 性取向雷达图可视化 */}
+          <div className="mb-8">
+            <h3 className="text-xl font-bold mb-4 text-purple-700 text-center">性取向类型占比雷达图</h3>
+            <RadarChart
+              data={state.radarData || []}
+            />
+            <div className="text-gray-500 text-xs text-center mt-2">本图基于你每道题的真实作答，反映多维性取向倾向</div>
           </div>
 
           <div className="mb-8">
