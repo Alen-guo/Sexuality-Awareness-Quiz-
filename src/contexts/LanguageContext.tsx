@@ -10,7 +10,7 @@ const LanguageContext = createContext({
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [lang, setLang] = useState('zh');
+  const [lang, setLang] = useState('en');
 
   useEffect(() => {
     const saved = localStorage.getItem('lang');
