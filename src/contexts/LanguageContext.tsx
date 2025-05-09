@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import zh from '../locales/zh';
+import en from '../locales/en';
 
 const LanguageContext = createContext({
   lang: 'zh',
@@ -28,4 +30,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       {children}
     </LanguageContext.Provider>
   );
-}; 
+};
+
+export function useI18n() {
+  const { lang } = useLanguage();
+  return lang === 'zh' ? zh : en;
+} 

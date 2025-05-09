@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { useI18n } from '../contexts/LanguageContext';
 
 interface Question {
   id: number;
@@ -8,44 +9,6 @@ interface Question {
   text: string;
   note: string;
 }
-
-const questions: Question[] = [
-  // 第一部分：情感吸引光谱
-  { id: 1, group: '情感吸引光谱', type: '异性恋', text: '异性的香水（发香，体香，荷尔蒙）气息会让我心跳加速', note: '映射金赛量表对异性吸引力的测量逻辑' },
-  { id: 2, group: '情感吸引光谱', type: '同性恋', text: '同性的笑容比异性更让我感到舒服，温暖', note: '参考性向度理论对同性吸引的界定' },
-  { id: 3, group: '情感吸引光谱', type: '泛性恋', text: '专注做一件事情的陌生人，我会对TA心动，无关性别，甚至想用相机记录下来', note: '呼应泛性恋的去性别化吸引特征' },
-  { id: 4, group: '情感吸引光谱', type: '跨性别恋', text: '听到有人用中性嗓音读诗时，更会带动我的情绪，产生浪漫幻想，而不是"磁性男音"，"御姐音"', note: '结合跨性别声线吸引力研究' },
-  { id: 5, group: '情感吸引光谱', type: '无性恋', text: '从未对任何人产生过肢体亲密接触的幻想，无关性别', note: '对应无性恋的核心判定标准' },
-  { id: 6, group: '情感吸引光谱', type: '恋物性取向', text: '古旧书籍的磨砂触感，比人体肌肤接触更让我着迷', note: '隐喻式表达恋物取向的心理机制' },
-  { id: 7, group: '情感吸引光谱', type: '跨性别恋', text: '看到跨性别者，独特的穿搭风格，会忍不住多看两眼（男扮女，女扮男的Cosplayer）', note: '测试对性别表达的开放态度，四爱' },
-  { id: 8, group: '情感吸引光谱', type: '灰性恋', text: '深夜电台主持人性别模糊的声线常引发我的遐想', note: '映射非二元性别的声音吸引力' },
-  { id: 9, group: '情感吸引光谱', type: '灰性恋', text: '对生理特征不符合传统分类的人产生过好奇或好感，长发美男，短发酷女', note: '指向间性人群体接纳度评估' },
-  { id: 10, group: '情感吸引光谱', type: '双性恋', text: '特定性别的脆弱时刻（如强忍泪水）特别触动我', note: '涉及情感投射的性别偏好分析' },
-  
-  // 第二部分：关系构建模式
-  { id: 11, group: '关系构建模式', type: '跨性别恋', text: '期待与跨性别伴侣在厨房做饭，或者昏暗的灯光下，烛光晚餐跳舞', note: '映射跨性别亲密关系的场景化测试' },
-  { id: 12, group: '关系构建模式', type: '跨性别恋', text: '能接受伴侣的生理性别与心理认同不一致，男柔软女强势', note: '测试跨性别关系包容性' },
-  { id: 13, group: '关系构建模式', type: '智性恋', text: '智力富有逻辑的对话，带来的满足感，远超肢体接触', note: '体现智性恋的核心特征' },
-  { id: 14, group: '关系构建模式', type: '泛性恋', text: '更愿意在极光下,交换DIY戒指,而非传统钻戒', note: '反映对制度性关系的态度' },
-  { id: 15, group: '关系构建模式', type: '灰性恋', text: '排斥所有需要"明确性别角色"的亲密关系', note: '评估非二元性别关系倾向' },
-  { id: 16, group: '关系构建模式', type: '泛性恋', text: '双人旅行时更在意去哪儿，而不是同伴的性别', note: '测试泛性恋的情感优先特征' },
-  { id: 17, group: '关系构建模式', type: '泛性恋', text: '期待收到性别未知的手写情书，更关注情书的内容，而非性别', note: '映射去性别化的浪漫需求' },
-  { id: 18, group: '关系构建模式', type: '双性恋', text: '能理解开放式关系，比如，和伴侣的伴侣约会', note: '涉及多边恋伦理的认知测试' },
-  { id: 19, group: '关系构建模式', type: '异性恋', text: '与任何人约会都需要，提前知道对方的性别', note: '反映性别确定性需求' },
-  { id: 20, group: '关系构建模式', type: '智性恋', text: '认为爱情的本质是灵魂契合，而不是生理匹配', note: '呼应酷儿理论的核心主张' },
-  
-  // 第三部分：社会身份认知
-  { id: 21, group: '社会身份认知', type: '同性恋', text: '主动使用「他们」代词称呼非传统异性恋者', note: '测试语言包容性实践' },
-  { id: 22, group: '社会身份认知', type: '跨性别恋', text: '尊重别人用性别重置手术，实现自我认同', note: '评估跨性别医疗认知' },
-  { id: 23, group: '社会身份认知', type: '跨性别恋', text: '穿着中性服装时会产生强烈性别愉悦感，偷感很重，新奇刺激', note: '引用跨性别euphoria概念' },
-  { id: 24, group: '社会身份认知', type: '泛性恋', text: '期待未来社会取消所有性别分类标识', note: '测试性别解构的前沿态度' },
-  { id: 25, group: '社会身份认知', type: '泛性恋', text: '认为「爱情本应超越生理性别」', note: '衡量社会平等价值观' },
-  { id: 26, group: '社会身份认知', type: '灰性恋', text: '曾因性取向问题产生长期自我怀疑', note: '映射性少数群体认知困境' },
-  { id: 27, group: '社会身份认知', type: '无性恋', text: '不可接受无性恋是心理疾病的说法', note: '反对性取向病理化观点' },
-  { id: 28, group: '社会身份认知', type: '同性恋', text: '愿意参与彩虹主题公益活动', note: '测试社群归属感' },
-  { id: 29, group: '社会身份认知', type: '恋物性取向', text: '认为性取向会随时间，而发生变化，在某一天被掰弯', note: '呼应金赛流动性取向理论' },
-  { id: 30, group: '社会身份认知', type: '智性恋', text: '期待建立更精细的性取向分类体系，而不是单纯的同性恋，异性恋，双性恋', note: '指向学术研究前沿期待' },
-];
 
 const gradientOptions = [
   { value: 4, label: '非常同意', size: 'w-10 h-10' },
@@ -60,6 +23,8 @@ const Test: React.FC = () => {
   const [answers, setAnswers] = useState<number[]>(new Array(30).fill(-1));
   const navigate = useNavigate();
   const questionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const t = useI18n();
+  const questions: Question[] = t.test.questions;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -96,9 +61,7 @@ const Test: React.FC = () => {
       };
 
       // 统计每种type的得分占比
-      const typeMap = [
-        '异性恋', '同性恋', '双性恋', '泛性恋', '无性恋', '灰性恋', '跨性别恋', '恋物性取向', '智性恋'
-      ];
+      const typeMap = t.test.typeMap;
       const typeScores: Record<string, { total: number, count: number }> = {};
       questions.forEach((q, idx) => {
         if (!typeScores[q.type]) typeScores[q.type] = { total: 0, count: 0 };
@@ -138,7 +101,7 @@ const Test: React.FC = () => {
   const startIndex = currentPage * 10;
   const endIndex = startIndex + 10;
   const currentQuestions = questions.slice(startIndex, endIndex);
-  const sections = ['情感吸引光谱', '关系构建模式', '社会身份认知'];
+  const sections = t.test.progress;
 
   const isPageComplete = () => {
     return answers.slice(startIndex, endIndex).every(answer => answer !== -1);
@@ -187,7 +150,8 @@ const Test: React.FC = () => {
                 
                 <div className="flex flex-col items-center w-full">
                   <div className="flex w-full justify-center items-center gap-8">
-                    {gradientOptions.map((option, optionIndex) => {
+                    {t.test.options.map((label, optionIndex) => {
+                      const option = gradientOptions[optionIndex];
                       const isSelected = answers[questionIndex] === option.value;
                       const faded = answered && !isSelected;
                       return (
@@ -206,7 +170,7 @@ const Test: React.FC = () => {
                             }
                           `
                           }
-                          title={option.label}
+                          title={label}
                           style={{ minWidth: 0, minHeight: 0 }}
                         >
                           {isSelected && (
@@ -219,8 +183,8 @@ const Test: React.FC = () => {
                     })}
                   </div>
                   <div className="flex w-full justify-between mt-2 px-2">
-                    <span className={`font-medium transition-colors ${answered ? 'text-green-300' : 'text-green-600'}`}>同意</span>
-                    <span className={`font-medium transition-colors ${answered ? 'text-purple-300' : 'text-purple-600'}`}>不认同</span>
+                    <span className={`font-medium transition-colors ${answered ? 'text-green-300' : 'text-green-600'}`}>{t.test.agree}</span>
+                    <span className={`font-medium transition-colors ${answered ? 'text-purple-300' : 'text-purple-600'}`}>{t.test.disagree}</span>
                   </div>
                 </div>
               </div>
@@ -237,7 +201,7 @@ const Test: React.FC = () => {
                 ? 'bg-purple-600 hover:bg-purple-700' 
                 : 'bg-gray-300 cursor-not-allowed'}`}
           >
-            {currentPage === 2 ? '查看结果' : '下一部分'}
+            {currentPage === 2 ? t.test.submit : t.test.next}
           </button>
         </div>
       </div>

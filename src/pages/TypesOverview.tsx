@@ -1,9 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useI18n } from '../contexts/LanguageContext';
 
-const orientationGroups = [
+interface OrientationGroup {
+  group: 'mainGroup' | 'diverseGroup' | 'specialGroup';
+  bg: string;
+  titleColor: string;
+  types: Array<{
+    key: string;
+    label: string;
+    icon: string;
+    color: string;
+    desc: string;
+    detail: {
+      definition: string;
+      challenges: string[];
+      misunderstandings: string[];
+      recommendations: string[];
+    };
+  }>;
+}
+
+const orientationGroups: OrientationGroup[] = [
   {
-    group: '主流取向',
+    group: 'mainGroup',
     bg: 'bg-purple-100',
     titleColor: 'text-purple-200',
     types: [
@@ -145,6 +165,7 @@ const orientationGroups = [
 ];
 
 const TypeDetailModal = ({ type, onClose }: { type: any; onClose: () => void }) => {
+  const t = useI18n();
   if (!type) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -154,10 +175,10 @@ const TypeDetailModal = ({ type, onClose }: { type: any; onClose: () => void }) 
           <span className="text-4xl mr-4">{type.icon}</span>
           <span className="text-2xl font-bold drop-shadow-lg">{type.label}</span>
         </div>
-        <div className="mb-3"><span className="font-semibold">类型定义：</span>{type.detail.definition}</div>
-        <div className="mb-3"><span className="font-semibold">现状/挑战：</span><ul className="list-disc pl-6">{type.detail.challenges.map((c:string,i:number)=>(<li key={i}>{c}</li>))}</ul></div>
-        <div className="mb-3"><span className="font-semibold">常见误解：</span><ul className="list-disc pl-6">{type.detail.misunderstandings.map((c:string,i:number)=>(<li key={i}>{c}</li>))}</ul></div>
-        <div className="mb-3"><span className="font-semibold">生活建议：</span><ul className="list-disc pl-6">{type.detail.recommendations.map((c:string,i:number)=>(<li key={i}>{c}</li>))}</ul></div>
+        <div className="mb-3"><span className="font-semibold">{t.types.detail.definition}：</span>{type.detail.definition}</div>
+        <div className="mb-3"><span className="font-semibold">{t.types.detail.challenges}：</span><ul className="list-disc pl-6">{type.detail.challenges.map((c:string,i:number)=>(<li key={i}>{c}</li>))}</ul></div>
+        <div className="mb-3"><span className="font-semibold">{t.types.detail.misunderstandings}：</span><ul className="list-disc pl-6">{type.detail.misunderstandings.map((c:string,i:number)=>(<li key={i}>{c}</li>))}</ul></div>
+        <div className="mb-3"><span className="font-semibold">{t.types.detail.recommendations}：</span><ul className="list-disc pl-6">{type.detail.recommendations.map((c:string,i:number)=>(<li key={i}>{c}</li>))}</ul></div>
       </div>
     </div>
   );
@@ -167,6 +188,7 @@ const TypesOverview: React.FC = () => {
   const [selectedType, setSelectedType] = useState<any>(null);
   const { type } = useParams();
   const navigate = useNavigate();
+  const t = useI18n();
 
   // 根据URL参数自动弹出模态框
   useEffect(() => {
@@ -190,7 +212,9 @@ const TypesOverview: React.FC = () => {
       {orientationGroups.map((group) => (
         <section key={group.group} className={`${group.bg} py-16 relative`}>
           {/* 大标题半透明背景字 */}
-          <h2 className={`absolute left-1/2 -translate-x-1/2 top-8 text-7xl font-extrabold opacity-20 select-none pointer-events-none ${group.titleColor} whitespace-nowrap z-0`}>{group.group}</h2>
+          <h2 className={`absolute left-1/2 -translate-x-1/2 top-8 text-7xl font-extrabold opacity-20 select-none pointer-events-none ${group.titleColor} whitespace-nowrap z-0`}>
+            {t.types[group.group]}
+          </h2>
           <div className="max-w-5xl mx-auto relative z-10">
             <div className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-8">
               {group.types.map(type => (
@@ -208,7 +232,7 @@ const TypesOverview: React.FC = () => {
           </div>
         </section>
       ))}
-      <TypeDetailModal type={selectedType} onClose={handleClose} />
+      {selectedType && <TypeDetailModal type={selectedType} onClose={handleClose} />}
     </div>
   );
 };

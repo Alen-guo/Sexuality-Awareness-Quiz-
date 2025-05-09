@@ -3,10 +3,11 @@ import ReactECharts from 'echarts-for-react';
 
 interface RadarChartProps {
   data: { name: string; value: number }[];
+  typeMap: Record<string, string>;
 }
 
-const RadarChart: React.FC<RadarChartProps> = ({ data }) => {
-  const indicator = data.map(item => ({ name: item.name, max: 100 }));
+const RadarChart: React.FC<RadarChartProps> = ({ data, typeMap }) => {
+  const indicator = data.map(item => ({ name: typeMap[item.name] || item.name, max: 100 }));
   const values = data.map(item => item.value);
 
   const option = {
