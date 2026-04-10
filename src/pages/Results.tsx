@@ -49,33 +49,20 @@ const Results: React.FC = () => {
   const { lang } = useLanguage() as { lang: 'zh' | 'en', toggleLang: () => void };
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as { scores: { attraction: number, relationship: number, identity: number }, answers: number[], radarData?: { name: string, value: number }[], primaryType?: string };
-  // 优先用primaryType（radarData最高项英文key）作为主类型
-  let orientationType: OrientationType;
-  if (state.primaryType) {
-    // 用key字段查找
-    const card = orientationColorCards.find(card => card.key === state.primaryType);
-    if (card) {
-      orientationType = {
-        label: card.label[lang as 'zh' | 'en'],
-        color: card.color,
-        icon: card.icon,
-        key: card.key,
-      };
-    } else {
-      // fallback
-      orientationType = getOrientationType(Math.round((state?.scores?.attraction ?? 0) * 100));
-    }
-  } else {
-    orientationType = getOrientationType(Math.round((state?.scores?.attraction ?? 0) * 100));
-  }
+  const state = location.state as { scores: { attraction: number, relationship: number, identity: number }, answers: number[], radarData?: { name: string, value: number }[], primaryType?: string } | null;
 
-  // 生存概率仪表盘相关状态
+  // 所有 hooks 必须在 early return 之前声明（React Rules of Hooks）
   const [locationInfo, setLocationInfo] = useState<{city: string, region: string} | null>(null);
   const [safetyScore, setSafetyScore] = useState<number | null>(null);
   const [cardModal, setCardModal] = useState<null | OrientationType>(null);
 
+  // 进入结果页时强制滚到顶部（兼容微信/百度等手机浏览器）
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    if (!state) return;
     // 获取地理位置（这里只用IP地理位置API模拟，实际可接入更权威服务）
     fetch('https://ipapi.co/json/')
       .then(res => res.json())
@@ -99,6 +86,40 @@ const Results: React.FC = () => {
         setSafetyScore(60); // 默认值
       });
   }, []);
+
+  // 没有 state（刷新页面 / 直接访问 URL）时，引导回测试页
+  // 必须放在所有 hooks 之后
+  if (!state) {
+    return (
+      <div className="container mx-auto px-4 py-32 flex flex-col items-center">
+        <p className="text-gray-500 mb-6 text-lg">请先完成测试再查看结果。</p>
+        <button
+          className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          onClick={() => navigate('/test')}
+        >
+          开始测试
+        </button>
+      </div>
+    );
+  }
+
+  // 优先用primaryType（radarData最高项英文key）作为主类型
+  let orientationType: OrientationType;
+  if (state.primaryType) {
+    const card = orientationColorCards.find(card => card.key === state.primaryType);
+    if (card) {
+      orientationType = {
+        label: card.label[lang as 'zh' | 'en'],
+        color: card.color,
+        icon: card.icon,
+        key: card.key,
+      };
+    } else {
+      orientationType = getOrientationType(Math.round((state.scores?.attraction ?? 0) * 100));
+    }
+  } else {
+    orientationType = getOrientationType(Math.round((state.scores?.attraction ?? 0) * 100));
+  }
 
   const getResultData = (score: number): ResultData => {
     return {

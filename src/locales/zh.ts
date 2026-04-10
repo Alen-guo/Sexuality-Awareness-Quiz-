@@ -258,7 +258,7 @@ const zh = {
         social: {
             title: "关注我们",
             wechat: "微信",
-            weibo: "微博"
+            weibo: "微微微"
         },
         copyright: "© 2025 性取向测试. All rights reserved."
     },
