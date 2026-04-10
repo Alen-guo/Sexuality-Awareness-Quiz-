@@ -55,45 +55,63 @@ const Test: React.FC = () => {
     } else {
       // 计算每个维度的得分
       const dimensionScores = {
-        attraction: answers.slice(0, 10).reduce((sum, val) => sum + val, 0) / 40, // 情感吸引光谱
-        relationship: answers.slice(10, 20).reduce((sum, val) => sum + val, 0) / 40, // 关系构建模式
-        identity: answers.slice(20, 30).reduce((sum, val) => sum + val, 0) / 40, // 社会身份认知
+        attraction: answers.slice(0, 10).reduce((sum, val) => sum + val, 0) / 40,
+        relationship: answers.slice(10, 20).reduce((sum, val) => sum + val, 0) / 40,
+        identity: answers.slice(20, 30).reduce((sum, val) => sum + val, 0) / 40,
       };
 
-      // 统计每种type的得分占比
+      // 分区加权：吸引力光谱最能反映核心取向（×3），关系模式次之（×2），
+      // 社会身份认知更多测量价值观而非取向倾向（×1）
+      const sectionWeights: Record<string, number> = {
+        'Attraction Spectrum': 3,
+        'Relationship Patterns': 2,
+        'Social Identity Cognition': 1,
+      };
+
       const typeMap = t.test.typeMap;
-      const typeScores: Record<string, { total: number, count: number }> = {};
+      const typeAccum: Record<string, { weightedSum: number; maxSum: number }> = {};
+
       questions.forEach((q, idx) => {
-        if (!typeScores[q.type]) typeScores[q.type] = { total: 0, count: 0 };
+        if (!typeAccum[q.type]) typeAccum[q.type] = { weightedSum: 0, maxSum: 0 };
+        const w = sectionWeights[q.group] ?? 1;
         if (answers[idx] !== -1) {
-          typeScores[q.type].total += answers[idx];
-          typeScores[q.type].count += 1;
+          typeAccum[q.type].weightedSum += answers[idx] * w;
+          typeAccum[q.type].maxSum += 4 * w;
         }
       });
-      // 归一化为百分比
-      const radarData = typeMap.map(type => {
-        const info = typeScores[type] || { total: 0, count: 0 };
-        // 单题最高分为4
+
+      // 各类型加权原始分（0-100），答"不确定"时中性基线 ≈ 50
+      const rawScores = typeMap.map(type => {
+        const acc = typeAccum[type] || { weightedSum: 0, maxSum: 1 };
         return {
           name: type,
-          value: info.count > 0 ? Math.round((info.total / (info.count * 4)) * 100) : 0
+          raw: acc.maxSum > 0 ? (acc.weightedSum / acc.maxSum) * 100 : 50,
         };
       });
 
-      // 选出得分最高的type作为主类型
-      let primaryType = radarData[0];
-      radarData.forEach(item => {
-        if (item.value > primaryType.value) primaryType = item;
-      });
+      // 主类型 = 加权原始分最高者（最真实反映核心取向）
+      const primaryType = rawScores.reduce(
+        (best, cur) => cur.raw > best.raw ? cur : best,
+        rawScores[0]
+      );
 
-      window.scrollTo({ top: 0, behavior: 'auto' }); // 跳转前滚动到顶部
-      navigate('/results', { 
-        state: { 
+      // 雷达图对比增强：以均值为轴心拉伸（×2.2），使主类型与其余类型区分度更高
+      // 避免所有类型堆在 45-65% 导致雷达图呈圆形
+      const mean = rawScores.reduce((s, d) => s + d.raw, 0) / rawScores.length;
+      const STRETCH = 2.2;
+      const radarData = rawScores.map(item => ({
+        name: item.name,
+        value: Math.min(98, Math.max(8, Math.round(mean + (item.raw - mean) * STRETCH))),
+      }));
+
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      navigate('/results', {
+        state: {
           scores: dimensionScores,
-          answers: answers,
+          answers,
           radarData,
-          primaryType: primaryType.name
-        } 
+          primaryType: primaryType.name,
+        }
       });
     }
   };

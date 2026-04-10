@@ -7,8 +7,10 @@ interface RadarChartProps {
 }
 
 const RadarChart: React.FC<RadarChartProps> = ({ data, typeMap }) => {
-  const indicator = data.map(item => ({ name: typeMap[item.name] || item.name, max: 100 }));
   const values = data.map(item => item.value);
+  // 动态 max：比最高分多留 8 个单位，使主取向轴充分展开而非缩在图中央
+  const dynamicMax = Math.min(100, Math.max(...values) + 8);
+  const indicator = data.map(item => ({ name: typeMap[item.name] || item.name, max: dynamicMax }));
 
   const option = {
     tooltip: {
