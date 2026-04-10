@@ -13,7 +13,7 @@ const Profile: React.FC = () => {
       date: "2024-03-15",
       result: "传统性别认同",
     },
-    // 可以添加更多历史记录
+    // 可以添加更多历史
   ]);
 
   return (
